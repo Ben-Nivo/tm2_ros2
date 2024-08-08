@@ -72,6 +72,10 @@ void TmSvrRos2::publish_fbs()
     PubMsg &pm = pm_;
     TmRobotState &state = state_;
 
+    // Lock the state object while copying its data to the feedback state message, as copying its data (especially vectors) while
+    // another thread is writing to them can cause memory corruption and occasionally segmentation faults.
+    state.mtx_lock();
+
     // Publish feedback state
     pm.fbs_msg.header.stamp = node->rclcpp::Node::now();
     if(state.get_receive_state() != TmCommRC::TIMEOUT){
@@ -130,6 +134,10 @@ void TmSvrRos2::publish_fbs()
     pm.fbs_msg.joint_tor_average = state.joint_torque_average();
     pm.fbs_msg.joint_tor_min = state.joint_torque_min();
     pm.fbs_msg.joint_tor_max = state.joint_torque_max();
+
+    // All data from the state has been copied - we can unlock it again
+	state.mtx_unlock();
+
     pm.fbs_pub->publish(pm.fbs_msg);
 
     // Publish joint state
