@@ -169,9 +169,11 @@ void TmSvrRos2::fake_publisher()
       // Publish feedback state
       pm.fbs_msg.header.stamp = node->rclcpp::Node::now();
       {
+        state.mtx_lock();//make sure to lock state before reading it
         pm.fbs_msg.joint_pos = state.joint_angle();
         pm.fbs_msg.joint_vel = state.joint_speed();
         pm.fbs_msg.joint_tor = state.joint_torque();
+        state.mtx_unlock();//unlock it when done
       }
       pm.fbs_pub->publish(pm.fbs_msg);
 
