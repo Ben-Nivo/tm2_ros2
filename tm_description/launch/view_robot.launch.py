@@ -16,7 +16,7 @@ import xacro
 def generate_launch_description():
     # Robot description Configuration
     description_path = 'tm_description'
-    xacro_path = 'tm12s.urdf.xacro'
+    xacro_path = 'tm12.urdf.xacro'
     rviz_path = '/rviz/view_robot.rviz'     
     
     robot_description_config = xacro.process_file(
